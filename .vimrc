@@ -5,19 +5,17 @@ set nocompatible
 syntax enable
 
 " configure Vundle
-filetype on " without this vim emits a zero exit status, later, because of :ft off
+" filetype on " without this vim emits a zero exit status, later, because of :ft off
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-
+Plugin 'VundleVim/Vundle.vim'
 " install Vundle bundles
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
   source ~/.vimrc.bundles.local
 endif
-
 call vundle#end()
-
 " ensure ftdetect et al work by including this after the Vundle stuff
 filetype plugin indent on
 
@@ -25,7 +23,7 @@ set autoindent
 set autoread                                                 " reload files when changed on disk, i.e. via `git checkout`
 set backspace=2                                              " Fix broken backspace in some setups
 set backupcopy=yes                                           " see :help crontab
-set clipboard=unnamed                                        " yank and paste with the system clipboard
+set clipboard=unnamedplus                                        " yank and paste with the system clipboard
 set directory-=.                                             " don't store swapfiles in the current directory
 set encoding=utf-8
 set expandtab                                                " expand tabs to spaces
