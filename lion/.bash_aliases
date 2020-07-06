@@ -22,22 +22,34 @@ ddr()
 }
 
 # Sync to and from axon server add --progress if desired
-sendlion() { rsync -avh -e ssh "$1" ekellbuch@lion.paninski.zi.columbia.edu:"$2" }
-sendaxon()
-{ rsync -avhP -e ssh "$1" ekb2154@axon.rc.zi.columbia.edu:"$2" }
-sendmoto()
-{
+sendlion() {
+    rsync -avh -e ssh "$1" ekellbuch@lion.paninski.zi.columbia.edu:"$2"
+}
+sendaxon(){
+    rsync -avhP -e ssh "$1" ekb2154@axon.rc.zi.columbia.edu:"$2" 
+}
+sendmoto(){
     rsync -avh -e ssh "$1" ekb2154@terremoto.rcs.columbia.edu:"$2"
 }
 
 # get from lion from any directory add --progress if desired
-getlion() { rsync -avh -e ssh ekellbuch@lion.paninski.zi.columbia.edu:"$1" . }
-getaxon() { rsync -avh -e ssh  ekb2154@axon.rc.zi.columbia.edu:"$1" . }
-getmoto() { rsync -avh -e ssh ekb2154@terremoto.rcs.columbia.edu:"$1" . }
+getlion() {
+    rsync -avh -e ssh ekellbuch@lion.paninski.zi.columbia.edu:"$1" .
+}
+getaxon() {
+    rsync -avh -e ssh  ekb2154@axon.rc.zi.columbia.edu:"$1" . 
+}
+getmoto() { 
+    rsync -avh -e ssh ekb2154@terremoto.rcs.columbia.edu:"$1" . 
+}
 
-sendmac() { rsync -avh -e ssh "$1" kelly@160.39.4.175:/Users/kelly/Downloads }
+sendmac() { 
+    rsync -avh -e ssh "$1" kelly@160.39.4.175:/Users/kelly/Downloads 
+}
 
-sendaxondgp() { rsync -avhP -e ssh "$1" ekb2154@axon.rc.zi.columbia.edu:/home/ekb2154/data/libraries/deepgraphpose/"$2" }
+sendaxondgp() { 
+    rsync -avhP -e ssh "$1" ekb2154@axon.rc.zi.columbia.edu:/home/ekb2154/data/libraries/deepgraphpose/"$2" 
+}
 
 
 #jupyter
@@ -77,9 +89,4 @@ alias logaxon='ssh -CY -x -Y -v ekb2154@axon.rc.zi.columbia.edu -p 22'
 alias loghaba='ssh -CY -x -Y -v ekb2154@habanero.rcs.columbia.edu -p 22'
 alias logmoto='ssh -CY -x -Y -v ekb2154@terremoto.rcs.columbia.edu -p 22'
 
-
-#shopt -s expand_aliases
-#shopt -s cdable_vars
-#shopt -s direxpand
-# engram
 
