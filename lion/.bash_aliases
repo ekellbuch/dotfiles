@@ -1,13 +1,20 @@
 # aliases
 alias realias='source ~/.bash_aliases'
-alias muxi='tmux attach-session -t'
 alias la='ls -A F --color=auto'
 alias l='ls -CF --color=auto'
 alias ls='ls -lGH --color=auto'
 alias ll="ls -Flas --color=auto"
 alias c='clear ; ls'
+
+alias muxi='tmux attach-session -t'
+
+alias py="python"
+alias wpy="ls -ls  find *.py"
+
 alias coda="conda activate"
 alias codi="conda deactivate"
+
+alias copout='readlink -f "$1" > ~/.tmpfullpath'
 
 # Functions
 cd_up()
@@ -21,7 +28,10 @@ ddr()
     readlink -f "$1" | xclip -selection clipboard
 }
 
-alias copout='readlink -f "$1" > ~/.tmpfullpath'
+coplion() {
+    tmpaxon1=$(ssh ekellbuch@lion.paninski.zi.columbia.edu "cat ~/.tmpfullpath") ;
+    rsync -avhP -e ssh --progress ekellbuch4@lion.paninski.zi.columbia.edu:${tmpaxon1} . ;
+}
 
 copaxon() {
     tmpaxon1=$(ssh ekb154@axon.rc.zi.columbia.edu "cat ~/.tmpfullpath") ;
@@ -33,30 +43,28 @@ sendlion() {
     rsync -avh -e ssh "$1" ekellbuch@lion.paninski.zi.columbia.edu:"$2"
 }
 sendaxon(){
-    rsync -avhP -e ssh "$1" ekb2154@axon.rc.zi.columbia.edu:"$2" 
+    rsync -avhP -e ssh "$1" ekb2154@axon.rc.zi.columbia.edu:"$2"
 }
 sendmoto(){
     rsync -avh -e ssh "$1" ekb2154@terremoto.rcs.columbia.edu:"$2"
 }
+
+sendmac() {
+    rsync -avh -e ssh "$1" kelly@160.39.4.175:/Users/kelly/Downloads
+}
+
 
 # get from lion from any directory add --progress if desired
 getlion() {
     rsync -avh -e ssh ekellbuch@lion.paninski.zi.columbia.edu:"$1" .
 }
 getaxon() {
-    rsync -avh -e ssh  ekb2154@axon.rc.zi.columbia.edu:"$1" . 
+    rsync -avh -e ssh  ekb2154@axon.rc.zi.columbia.edu:"$1" .
 }
-getmoto() { 
-    rsync -avh -e ssh ekb2154@terremoto.rcs.columbia.edu:"$1" . 
-}
-
-sendmac() { 
-    rsync -avh -e ssh "$1" kelly@160.39.4.175:/Users/kelly/Downloads 
+getmoto() {
+    rsync -avh -e ssh ekb2154@terremoto.rcs.columbia.edu:"$1" .
 }
 
-sendaxondgp() { 
-    rsync -avhP -e ssh "$1" ekb2154@axon.rc.zi.columbia.edu:/home/ekb2154/data/libraries/deepgraphpose/"$2" 
-}
 
 
 #jupyter
@@ -91,6 +99,8 @@ engridir='/run/user/1000/gvfs/smb-share:server=locker-smb.engram.rc.zi.columbia.
 
 alias jupyinit="jupyter lab --port=8888 --NotebookApp.iopub_data_rate_limit=1.0e10"
 alias jupyout="jupyter lab --port=8891 --NotebookApp.iopub_data_rate_limit=1.0e10 --no-browser"
+
+# logins
 alias logpanda='ssh -CY -x -Y -v ekellbuch@panda.stats.columbia.edu -p 22'
 alias logaxon='ssh -CY -x -Y -v ekb2154@axon.rc.zi.columbia.edu -p 22'
 alias loghaba='ssh -CY -x -Y -v ekb2154@habanero.rcs.columbia.edu -p 22'
