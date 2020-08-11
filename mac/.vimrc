@@ -5,7 +5,7 @@ set nocompatible
 syntax enable
 
 " configure Vundle
-filetype on " without this vim emits a zero exit status, later, because of :ft off
+" filetype on " without this vim emits a zero exit status, later, because of :ft off
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -25,7 +25,7 @@ set autoindent
 set autoread                                                 " reload files when changed on disk, i.e. via `git checkout`
 set backspace=2                                              " Fix broken backspace in some setups
 set backupcopy=yes                                           " see :help crontab
-set clipboard=unnamedplus,unnamed,autoselect                            " yank and paste with the system clipboard
+set clipboard=unnamedplus,unnamed,autoselect                 " yank and paste with the system clipboard
 set directory-=.                                             " don't store swapfiles in the current directory
 set encoding=utf-8
 set expandtab                                                " expand tabs to spaces
@@ -146,14 +146,14 @@ nnoremap <space> za
     " \ set fileformat=unix
 " Python, PEP-008
 au BufRead,BufNewFile *.py,*.pyw set expandtab
-au BufRead,BufNewFile *.py,*.pyw set textwidth=139
+au BufRead,BufNewFile *.py,*.pyw set textwidth=80
 au BufRead,BufNewFile *.py,*.pyw set tabstop=4
 au BufRead,BufNewFile *.py,*.pyw set softtabstop=4
 au BufRead,BufNewFile *.py,*.pyw set shiftwidth=4
 au BufRead,BufNewFile *.py,*.pyw set autoindent
-au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /^\t\+/
-au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /\s\+$/
-au         BufNewFile *.py,*.pyw set fileformat=unix
+"au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /^\t\+/
+"au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /\s\+$/
+"au         BufNewFile *.py,*.pyw set fileformat=unix
 au BufRead,BufNewFile *.py,*.pyw let b:comment_leader = '#'
 
 set encoding=utf-8

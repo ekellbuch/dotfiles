@@ -34,6 +34,7 @@ export LD_LIBRARY_PATH="$MKLROOT/../:$LD_LIBRARY_PATH"
 
 ########### Configuration
 export PS1="\[\033[38;5;212m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\h:\[$(tput sgr0)\]\[\033[38;5;6m\][\w]:\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+
 export CLICOLOR=1
 export LSCOLORS="EHfxcxdxBxegecabagacad"
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
@@ -42,17 +43,17 @@ test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shel
 
 # Other Libraries
 export TREFIDE="${HOME}/Projects/matrixfactorization/trefide"
-export COCAIM="${HOME}/Projects/matrixfactorization/cocaim"
+##export COCAIM="${HOME}/Projects/matrixfactorization/cocaim"
 
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$COCAIM/src"
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$TREFIDE/src"
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$TREFIDE/src/proxtv:$TREFIDE/src/glmgen/lib"
+#export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$COCAIM/src"
+#export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$TREFIDE/src"
+#export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$TREFIDE/src/proxtv:$TREFIDE/src/glmgen/lib"
 
-export DYLD_LIBRARY_PATH="$MKLROOT/../compiler/lib:$MKLROOT/lib:$DYLD_LIBRARY_PATH"
-export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:$TREFIDE/src"
-export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:$TREFIDE/src/proxtv:$TREFIDE/src/glmgen/lib"
+#export DYLD_LIBRARY_PATH="$MKLROOT/../compiler/lib:$MKLROOT/lib:$DYLD_LIBRARY_PATH"
+#export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:$TREFIDE/src"
+#export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:$TREFIDE/src/proxtv:$TREFIDE/src/glmgen/lib"
 
-export PYTHONPATH="${PYTHONPATH}:${COCAIM}"
+#export PYTHONPATH="${PYTHONPATH}:${COCAIM}"
 
 # added by Anaconda3 5.2.0 installer
 #export PATH="/Users/kelly/anaconda3/bin:$PATH"  # commented out by conda initialize
@@ -77,8 +78,16 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
-
 #export PATH=/usr/local/texlive/2018/bin/x86_64-darwin:${PATH}
 #export PATH=/Applications/MacVim.app/Contents/MacOS/Vim:${PATH}
 
 
+
+##
+# Your previous /Users/kelly/.bash_profile file was backed up as /Users/kelly/.bash_profile.macports-saved_2020-07-23_at_10:59:52
+##
+# Finished adapting your PATH environment variable for use with MacPorts.
+# MacPorts Installer addition on 2020-07-23_at_10:59:52: adding an appropriate PATH variable for use with MacPorts.
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+export PATH="/Users/kelly/miniconda3/bin:$PATH"
+#export PYTHONPATH=$PYTHONPATH:/Users/kelly/miniconda3/lib/python3.7/site-packages
