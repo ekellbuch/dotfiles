@@ -1,15 +1,22 @@
 #aliases
+alias realias="source ~/.bash_aliases"
+alias la='ls -A  --color=auto'
+alias l='ls -CF  --color=auto'
+alias ll='ls -alFs --color=auto'
+alias ls='ls -lGH --color=auto'
+alias c='clear ; ls'
+
 alias muxi='tmux attach-session -t'
+
+alias py="python"
+alias wpy="ls -ls  find *.py"
+
 alias coda="source activate"
 alias codi="source deactivate"
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-alias srgpu="srun --pty -t 0-02:00:00 --gres=gpu:1 -A stats /bin/bash"
-alias srgpu3h="srun --pty -t 0-04:00:00 --gres=gpu:3  -A stats /bin/bash"
-alias ekblion="ekellbuch@lion.paninski.zi.columbia.edu"
 
-alias jobb="squeue | grep ekb2154"
+
+alias copout='readlink -f "$1" > ~/.tmpfullpath'
+
 # Functions
 cd_up () {
     cd $(printf "%0.s../" $(seq 1 $1 ));
@@ -18,48 +25,81 @@ alias 'cd..'='cd_up'
 
 
 # File transfer
-alias tmpaxon='ssh ekb2154@axon.rc.zi.columbia.edu "cat ~/.tmpfullpath"' ;
-copaxon() {
-    tmpaxon1=$(ssh ekb2154@axon.rc.zi.columbia.edu "cat ~/.tmpfullpath") ;
-    rsync -avhP -e ssh --progress ekb2154@axon.rc.zi.columbia.edu:${tmpaxon1} . ;
+coplion() {
+    tmpaxon1=$(ssh ekellbuch@lion.paninski.zi.columbia.edu "cat ~/.tmpfullpath") ;
+    rsync -avhP -e ssh --progress ekellbuch4@lion.paninski.zi.columbia.edu:${tmpaxon1} . ;
 }
 
-coplion() {
-    tmplion1=$(ssh ekellbuch@lion.paninski.zi.columbia.edu "cat ~/.tmpfullpath") ;
-    rsync -avhP -e ssh --progress ekellbuch@lion.paninski.zi.columbia.edu:${tmplion1} . ;
+copaxon() {
+    tmpaxon1=$(ssh ekb154@axon.rc.zi.columbia.edu "cat ~/.tmpfullpath") ;
+    rsync -avhP -e ssh --progress ekb2154@axon.rc.zi.columbia.edu:${tmpaxon1} . ;
 }
 
 
 # send to lion from any directory
 sendlion() {
-    rsync -avzhe ssh --info=progress2 "$1" ekellbuch@lion.paninski.zi.columbia.edu:"$2"
+    rsync -avh -e ssh "$1" ekellbuch@lion.paninski.zi.columbia.edu:"$2"
+}
+sendaxon(){
+    rsync -avhP -e ssh "$1" ekb2154@axon.rc.zi.columbia.edu:"$2"
+}
+sendmoto(){
+    rsync -avzhe ssh "$1" ekb2154@terremoto.rcs.columbia.edu:"$2"
 }
 
-# get from lion from any directory
+
+# get from lion from any directory add --progress if desired
 getlion() {
-    rsync -avzhe ssh --info=progress2 ekellbuch@lion.paninski.zi.columbia.edu:"$1" .
+    rsync -avh -e ssh ekellbuch@lion.paninski.zi.columbia.edu:"$1" .
 }
-
-# send to axon from any directory
-sendaxon() {
-    rsync -avzhe ssh --info=progress2 "$1" ekb2154@axon.rc.zi.columbia.edu:"$2"
-}
-
-
 getaxon() {
-    rsync -avh -e ssh  ekb2154@axon.rc.zi.columbia.edu:"$1" . 
+    rsync -avh -e ssh  ekb2154@axon.rc.zi.columbia.edu:"$1" .
+}
+getmoto() {
+    rsync -avh -e ssh ekb2154@terremoto.rcs.columbia.edu:"$1" .
 }
 
-alias c='clear ; ls'
-alias realias="source ~/.bash_aliases"
+# jupyter
+jupytopy()
+{
+    jupyter nbconvert --to script "$1"
+}
+
+jupytohtml()
+{
+    jupyter nbconvert "$1"
+    filename=$1
+    filename_base=${filename%.*}
+    echo "${filename_base}.html"
+}
+
+
+#%%
+alias jobb="squeue | grep ekb2154"
+#%% Moto
+alias sr1gpu="srun --pty -t 0-04:00:00 --gres=gpu:1 -A stats /bin/bash"
+alias sr3gpu="srun --pty -t 0-08:00:00 --gres=gpu:3 --mem-per-cpu=16G -A stats /bin/bash"
+alias sr1gpu1d="srun --pty -t 1-00:00:00 --gres=gpu:1 --mem-per-cpu=16G -A stats /bin/bash"
+alias sr3gpu1d="srun --pty -t 1-00:00:00 --gres=gpu:3 --mem-per-cpu=16G -A stats /bin/bash"
+
 
 jupyinit1() {
     #srun --pty -t 0-04:00:00 --gres=gpu:3 --mem-per-cpu=16G -A ctn /bin/bash;
     unset XDG_RUNTIME_DIR;
     ml anaconda/3-2019.03;
     ml cuda10.1/toolkit
-    ml cudnn/cuda_10.1_v7.6.4    
+    ml cudnn/cuda_10.1_v7.6.4
     source activate "$1";
     jupyter lab --no-browser --ip=$(hostname -I | awk '{print $1}') --port=$(shuf -i 8888-9000 -n1);
 }
-#
+
+
+dinit() {
+    #srun --pty -t 0-04:00:00 --gres=gpu:3 --mem-per-cpu=16G -A ctn /bin/bash;
+    unset XDG_RUNTIME_DIR;
+    ml anaconda3-2019.03;
+    ml cuda10.1/toolkit
+    ml cudnn/cuda_10.1_v7.6.4
+    source activate "$1";
+    XDG_RUNTIME_DIR="";
+}
