@@ -1,10 +1,10 @@
 # aliases
 alias realias='source ~/.bash_aliases'
 alias muxi='tmux attach-session -t'
-alias la='ls -A'
-alias l='ls -CF'
-alias ls='ls -lGH'
-alias ll="ls -Flas"
+alias la='ls -A F --color=auto'
+alias l='ls -CF --color=auto'
+alias ls='ls -lGH --color=auto'
+alias ll="ls -Flas --color=auto"
 alias c='clear ; ls'
 alias coda="conda activate"
 alias codi="conda deactivate"
@@ -19,6 +19,13 @@ alias 'cd..'='cd_up'
 ddr()
 {
     readlink -f "$1" | xclip -selection clipboard
+}
+
+alias copout='readlink -f "$1" > ~/.tmpfullpath'
+
+copaxon() {
+    tmpaxon1=$(ssh ekb154@axon.rc.zi.columbia.edu "cat ~/.tmpfullpath") ;
+    rsync -avhP -e ssh --progress ekb2154@axon.rc.zi.columbia.edu:${tmpaxon1} . ;
 }
 
 # Sync to and from axon server add --progress if desired
