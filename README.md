@@ -7,8 +7,7 @@ Personal dotfiles and setup scripts.
 - **Clone the repo**
 
 ```bash
-git clone git@github.com:YOUR_USERNAME/dotfiles.git ~/Projects/dotfiles
-cd ~/Projects/dotfiles
+git clone git@github.com:ekellbuch/dotfiles.git 
 chmod +x deploy_osx.sh   # only needed once
 ```
 
