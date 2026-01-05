@@ -1,93 +1,30 @@
-# Exports
-export PATH=/usr/local/bin:/usr/local/sbin:$PATH
-export PATH="$HOME/opt:${PATH}"
-export PATH="$HOME/opt/python/libexec/bin:${PATH}"
-export PATH="/usr/local/opt/python/libexec/bin:${PATH}"
-export PATH=/usr/local/texlive/2018/bin/x86_64-darwin:${PATH}
-export BLAS=/usr/local/lib/libopenblas.a
-export LAPACK=/usr/local/lib/libopenblas.a
-export LD_LIBRARY_PATH=/opt/OpenBLAS/lib:$LD_LIBRARY_PATH
+# ----- Prompt -----
+PS1="\[\e[1;32m\]\u@\h \[\e[1;34m\]\w\[\e[0m\] $ "
 
-###################################################
-# Load .bashrc if it exists
-test -f ~/.bashrc && source ~/.bashrc
-
-#. ~/.profile
-#case  $- in *i*) . ~/.bashrc;; esac
-
-test -f ~/.bash_aliases && source ~/.bash_aliases
-
-# Intel MKL & ICC
-export MKL_NUM_THREADS=1
-export MKL_DYNAMIC="FALSE"
-export OMP_NUM_THREADS=1
-export OPENBLAS_NUM_THREADS=1
-source /opt/intel/mkl/bin/mklvars.sh intel64
-# source /opt/intel/parallel_studio_xe_2018.2.046/bin/psxevars.sh
-export MKLPATH="$MKLROOT/lib"
-export MKLINCLUDE="$MKLROOT/include"
-export LD_PRELOAD="/opt/intel/mkl/lib/libmkl_sequential.a"
-
-export LD_LIBRARY_PATH="/opt/intel/lib/intel64:$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="$MKLROOT/../:$LD_LIBRARY_PATH"
-
-########### Configuration
-export PS1="\[\033[38;5;212m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\h:\[$(tput sgr0)\]\[\033[38;5;6m\][\w]:\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
-
-export CLICOLOR=1
-export LSCOLORS="EHfxcxdxBxegecabagacad"
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
-##################
+# ----- Path -----
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="$HOME/.rbenv/shims:$PATH"
+export PATH="$HOME/.docker/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+export PATH="/Library/TeX/texbin:$PATH"
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 
-# Other Libraries
-export TREFIDE="${HOME}/Projects/matrixfactorization/trefide"
-##export COCAIM="${HOME}/Projects/matrixfactorization/cocaim"
+# ----- Environment -----
+export TMPDIR="/tmp"
 
-#export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$COCAIM/src"
-#export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$TREFIDE/src"
-#export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$TREFIDE/src/proxtv:$TREFIDE/src/glmgen/lib"
-
-#export DYLD_LIBRARY_PATH="$MKLROOT/../compiler/lib:$MKLROOT/lib:$DYLD_LIBRARY_PATH"
-#export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:$TREFIDE/src"
-#export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:$TREFIDE/src/proxtv:$TREFIDE/src/glmgen/lib"
-
-#export PYTHONPATH="${PYTHONPATH}:${COCAIM}"
-
-# added by Anaconda3 5.2.0 installer
-#export PATH="/Users/kelly/anaconda3/bin:$PATH"  # commented out by conda initialize
-
-# The next line updates PATH for the Google Cloud SDK.
-# if [ -f '/Users/kelly/google-cloud-sdk/path.bash.inc' ]; then source '/Users/kelly/google-cloud-sdk/path.bash.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-# if [ -f '/Users/kelly/google-cloud-sdk/completion.bash.inc' ]; then source '/Users/kelly/google-cloud-sdk/completion.bash.inc'; fi
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/kelly/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
+# ----- Conda -----
+if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+    . "$HOME/miniconda3/etc/profile.d/conda.sh"
 else
-    if [ -f "/Users/kelly/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/kelly/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/kelly/miniconda3/bin:$PATH"
-    fi
+    export PATH="$HOME/miniconda3/bin:$PATH"
 fi
-unset __conda_setup
-# <<< conda initialize <<<
-#export PATH=/usr/local/texlive/2018/bin/x86_64-darwin:${PATH}
-#export PATH=/Applications/MacVim.app/Contents/MacOS/Vim:${PATH}
 
+# ----- Google Cloud SDK -----
+[ -f "$HOME/Downloads/google-cloud-sdk/path.bash.inc" ] && . "$HOME/Downloads/google-cloud-sdk/path.bash.inc"
+[ -f "$HOME/Downloads/google-cloud-sdk/completion.bash.inc" ] && . "$HOME/Downloads/google-cloud-sdk/completion.bash.inc"
 
-
-##
-# Your previous /Users/kelly/.bash_profile file was backed up as /Users/kelly/.bash_profile.macports-saved_2020-07-23_at_10:59:52
-##
-# Finished adapting your PATH environment variable for use with MacPorts.
-# MacPorts Installer addition on 2020-07-23_at_10:59:52: adding an appropriate PATH variable for use with MacPorts.
-export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
-export PATH="/Users/kelly/miniconda3/bin:$PATH"
-#export PYTHONPATH=$PYTHONPATH:/Users/kelly/miniconda3/lib/python3.7/site-packages
+# ----- Source additional configs -----
+[ -f ~/.bashrc ] && . ~/.bashrc
+[ -f ~/.bash_aliases ] && . ~/.bash_aliases
+[ -f ~/.secrets ] && . ~/.secrets

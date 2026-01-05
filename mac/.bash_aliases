@@ -1,124 +1,250 @@
-# aliases
-alias realias='source ~/.bash_aliases'
-alias muxi='tmux attach-session -t'
+########################################
+# ~/.bash_aliases
+########################################
+
+########################################
+# Basics
+########################################
+realias() { source ~/.bash_aliases; }
+
+
+# ls family
 alias la='ls -A'
 alias l='ls -CF'
-#alias ls='ls -lGH'
-alias ll="ls -Flas"
-alias c='clear ; ls'
-alias coda="conda activate"
-alias codi="conda deactivate"
-alias texi='latexmk -c; latexmk -pdf -pvc'
+alias ll='ls -Flas'
+alias c='clear; ls'
+
+# tmux
+alias muxi='tmux attach-session -t'
+
+########################################
+# Conda
+########################################
+coda() { conda activate "$@"; }
+codi() { conda deactivate; }
+
+########################################
+# TeX
+########################################
+texi() { latexmk -c; latexmk -pdf -pvc; }
 #alias rm="mv ~/.Trash"
 #alias py='python'
 
-# Functions
+########################################
+# Utility: platform detection
+########################################
+_is_cmd() { command -v "$1" >/dev/null 2>&1; }
+
+
+# "open file/URL" cross-platform
+open_cmd() {
+  if _is_cmd xdg-open; then xdg-open "$@"
+  elif _is_cmd open; then open "$@"
+  else echo "No opener found (xdg-open/open)."
+  fi
+}
+
+# copy to clipboard cross-platform
+clipcopy() {
+  if _is_cmd pbcopy; then pbcopy
+  elif _is_cmd xclip; then xclip -selection clipboard
+  else echo "No clipboard tool found (pbcopy/xclip)." >&2; return 1
+  fi
+}
+
+# "realpath" fallback (mac-safe)
+abspath() {
+  if _is_cmd realpath; then realpath "$1"
+  else
+    # python fallback
+    python - <<'PY' "$1"
+import os, sys
+print(os.path.realpath(sys.argv[1]))
+PY
+  fi
+}
+
+# Copy absolute path to clipboard
+ddr() {
+  local p
+  p="$(abspath "$1")" || return
+  printf "%s" "$p" | clipcopy || return
+  echo "Copied: $p"
+}
+
+
+
+########################################
+# Navigation helpers
+########################################
 cd_up()
 {
     cd $(printf "%0.s../" $(seq 1 $1));
 }
 alias 'cd..'='cd_up'
 
-ddr() {
-    readlink -f "$1" | xclip -selection clipboard
-}
-#rsync -avh -e ssh --progress ekb2154@axon.rc.zi.columbia.edu:$(tmpaxon) . ;
+########################################
+# Git helpers
+########################################
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
 
-#copaxonfname () (
-#    alias tmpaxon='ssh ekb2154@axon.rc.zi.columbia.edu "cat ~/.tmpfullpath"' ;
-#)
+gcm()  { git commit -m "$*"; }
+gcmp() { git commit -m "$*" && git push; }
 
-alias tmpaxon='ssh ekb2154@axon.rc.zi.columbia.edu "cat ~/.tmpfullpath"' ;
-copaxon() {
-    tmpaxon1=$(ssh ekb2154@axon.rc.zi.columbia.edu "cat ~/.tmpfullpath") ;
-    rsync -avhP -e ssh --progress ekb2154@axon.rc.zi.columbia.edu:${tmpaxon1} . ;
-}
+########################################
+# Remote hosts (define once)
+########################################
+SSH_PORT=22
+SSH_FLAGS=(-C -Y -X)
 
-coplion() {
-    tmplion1=$(ssh ekellbuch@lion.paninski.zi.columbia.edu "cat ~/.tmpfullpath") ;
-    rsync -avhP -e ssh --progress ekellbuch@lion.paninski.zi.columbia.edu:${tmplion1} . ;
-}
+# Hosts
+HOST_AXON="axon.rc.zi.columbia.edu"
+HOST_HABA="habanero.rcs.columbia.edu"
+HOST_MOTO="terremoto.rcs.columbia.edu"
+HOST_LION="lion.paninski.zi.columbia.edu"
+HOST_PANDA="panda.stats.columbia.edu"
+HOST_KOALA="koala.paninski.zi.columbia.edu"
+HOST_SHER="login.sherlock.stanford.edu"
+
+# Usernames
+USER_AXON="ekb2154"
+USER_PAN="ekellbuch"
+USER_SHER="ekb"
+
+SHER_TRANSFER_DIR="/home/groups/swl1/ekb/transfer"
 
 
-alias jupyinit='jupyter lab --port=8888 --NotebookApp.iopub_data_rate_limit=1.0e10'
-
-# copy a file from a local server to a remove server with ssh
-sendlion() {
-  rsync -avh -e ssh --progress "$1" ekellbuch@lion.paninski.zi.columbia.edu:"$2"
-}
-
-# copy file from a remote server to a local server with ssh
-getlion() {
-  rsync -avh -e ssh --progress ekellbuch@lion.paninski.zi.columbia.edu:"$1" .
-}
-
-# copy a file from a local server to a remove server with ssh
-sendaxon() {
-  rsync -avh -e ssh --progress "$1" ekb2154@axon.rc.zi.columbia.edu:"$2"
-}
-
-# copy file from a remote server to a local server with ssh
-getaxon() {
-  rsync -avh -e ssh --progress ekb2154@axon.rc.zi.columbia.edu:"$1" .
-}
-#
-# copy a file from a local server to a remove server with ssh
-sendmoto() {
-  rsync -avh -e ssh --progress "$1" ekb2154@terremoto.rcs.columbia.edu:"$2"
-}
-
-# copy file from a remote server to a local server with ssh
-getmoto() {
-  rsync -avh -e ssh --progress ekb2154@terremoto.rcs.columbia.edu:"$1" .
+# Map "name" -> "user@host"
+remote_spec() {
+  case "$1" in
+    lion)  echo "${USER_PAN}@${HOST_LION}" ;;
+    panda) echo "${USER_PAN}@${HOST_PANDA}" ;;
+    koala) echo "${USER_PAN}@${HOST_KOALA}" ;;
+    axon)  echo "${USER_AXON}@${HOST_AXON}" ;;
+    haba)  echo "${USER_AXON}@${HOST_HABA}" ;;
+    moto)  echo "${USER_AXON}@${HOST_MOTO}" ;;
+    sher)  echo "${USER_SHER}@${HOST_SHER}" ;;
+    *)
+      echo "Unknown remote: $1 (expected: lion|panda|koala|axon|haba|moto)" >&2
+      return 1
+      ;;
+  esac
 }
 
-
-# jupyter
-jupytopy()
-{
-    jupyter nbconvert --to script "$1"
+remote_default_dir() {
+  case "$1" in
+    sher) echo "$SHER_TRANSFER_DIR" ;;
+    # lion) echo "/some/default/dir" ;;   # add later
+    # axon) echo "/some/default/dir" ;;
+    # panda) echo "/some/default/dir" ;;
+    *)    return 1 ;;
+  esac
 }
 
-jupytohtml()
-{
-    jupyter nbconvert "$1"
-    filename=$1
-    filename_base=${filename%.*}
-    echo "${filename_base}.html"
+########################################
+# SSH / rsync generic commands
+########################################
+
+logremote() {
+  # Usage: logremote lion
+  local r; r="$(remote_spec "$1")" || return
+  ssh -p "$SSH_PORT" -CYX "$r"
 }
 
-jupyview()
-{
-    jupyter nbconvert "$1"
-    filename=$1
-    filename_base=${filename%.*}
-    xdg-open "${filename_base}.html"
-    #gnome-terminal -e "${filename_base}.html"
+rsync_ssh() {
+  rsync -avhP --progress -e "ssh -p $SSH_PORT" "$@"
 }
 
+sendremote() {
+  # Usage: sendremote sher <local_path> <remote_path>
+  local r; r="$(remote_spec "$1")" || return
+  local src="$2"
+  local dst="$3"
 
-# specific
-alias logpanda='ssh -CYX ekellbuch@panda.stats.columbia.edu -p 22'
-alias logkoala='ssh -CYX ekellbuch@koala.paninski.zi.columbia.edu -p 22'
-alias loglion='ssh -CYX ekellbuch@lion.paninski.zi.columbia.edu -p 22'
-alias loghaba='ssh -CYX ekb2154@habanero.rcs.columbia.edu -p 22'
-alias logaxon='ssh -CYX ekb2154@axon.rc.zi.columbia.edu -p 22'
-#alias logcunix='ssh -CYXv ekb2154@cunix.cc.columbia.edu'
-alias logmoto='ssh -CYX ekb2154@terremoto.rcs.columbia.edu -p 22'
+  local r; r="$(remote_spec "$remote")" || return
 
-alias jupyinpanda='ssh -o ForwardX11=Yes -N -f -L localhost:8891:localhost:8891 ekellbuch@panda.stats.columbia.edu -p 22'
-alias jupyinlion='ssh -o ForwardX11=Yes -N -f -L localhost:8891:localhost:8891 ekellbuch@lion.paninski.zi.columbia.edu -p 22'
+  [[ -n "$src" ]] || { echo "Usage: sendremote <remote> <local_path> [remote_path]" >&2; return 2; }
 
+  if [[ -z "$dst" ]]; then
+    local defdir
+    defdir="$(remote_default_dir "$remote")" || {
+      echo "No default directory configured for remote '$remote' (pass remote_path explicitly)" >&2
+      return 2
+    }
+    dst="${defdir%/}/$(basename "$src")"
+  fi
+  rsync_ssh "$src" "${r}:$dst"
+}
 
-#alias ekblion='ekellbuch@lion.paninski.zi.columbia.edu'
-#alias ekbkoala='ekellbuch@koala.paninski.zi.columbia.edu'
-#alias ekbmoto='ekb2154@terremoto.rcs.columbia.edu'
-#alias ekbpanda='ekellbuch@panda.stats.columbia.edu'
-#alias ekbhaba='ekb2154@habanero.rcs.columbia.edu'
-#alias ekbaxon='ekb2154@axon.rc.zi.columbia.edu'
+getremote() {
+  # Usage: getremote lion <remote_path> [local_dest=.]
+  local r; r="$(remote_spec "$1")" || return
+  local src="$2"
+  local dst="${3:-.}"
+  if [[ -z "$src" ]]; then
+    echo "Usage: getremote <remote> <remote_path> [local_dest]" >&2
+    return 2
+  fi
+  rsync_ssh "${r}:$src" "$dst"
+}
 
-# alias vim='vim --servername vim'
-#alias mvim='/Applications/MacVim.app/Contents/MacOS/Vim'
-#engridir='/run/user/1000/gvfs/smb-share:server=locker-smb.engram.rc.zi.columbia.edu,share=paninski-locker,user=ADCU%5Cekb2154'
-engridir='/Volumes/paninski-locker'
+tmpremote() {
+  # Usage: tmpremote lion
+  local r; r="$(remote_spec "$1")" || return
+  ssh -p "$SSH_PORT" "$r" 'cat ~/.tmpfullpath'
+}
+
+copremote() {
+  # Usage: copremote lion
+  local r; r="$(remote_spec "$1")" || return
+  local p
+  p="$(ssh -p "$SSH_PORT" "$r" 'cat ~/.tmpfullpath')" || return
+  p="${p%$'\n'}"
+  [[ -n "$p" ]] || { echo "No ~/.tmpfullpath on $1" >&2; return 1; }
+  rsync_ssh "${r}:$p" "."
+}
+########################################
+# Jupyter
+########################################
+jupyinit() {
+  local port="${1:-8888}"
+  jupyter lab --port="$port" --NotebookApp.iopub_data_rate_limit=1.0e10
+}
+
+jupytopy()  { jupyter nbconvert --to script "$1"; }
+jupytohtml() { jupyter nbconvert --to html "$1"; echo "${1%.*}.html"; }
+
+jupyview() {
+  jupyter nbconvert --to html "$1" || return
+  open_cmd "${1%.*}.html"
+}
+
+########################################
+# Jupyter port forwarding
+########################################
+jupytunnel() {
+  # Usage: jupytunnel panda [local_port=8891] [remote_port=8891]
+  local r; r="$(remote_spec "$1")" || return
+  local lport="${2:-8891}" rport="${3:-8891}"
+  echo "Forwarding http://localhost:${lport} -> ${1}:localhost:${rport}"
+  ssh -p "$SSH_PORT" -o ForwardX11=Yes -N -f -L "localhost:${lport}:localhost:${rport}" "$r"
+}
+
+########################################
+# Misc
+########################################
+
+# Data directories
+export DATADIR="$HOME/data"
+export WANDB_DIR="$DATADIR/wandb/logs"
+export WANDB_CACHE_DIR="$DATADIR/wandb/cache"
+export WANDB_CONFIG_DIR="$DATADIR/wandb/config"
+export WANDB_DATA_DIR="$DATADIR/wandb/data"
+export WANDB_ARTIFACT_DIR="$DATADIR/wandb/artifacts"
+
+# Mac specific
+export ENGRI_DIR='/Volumes/paninski-locker'
 
