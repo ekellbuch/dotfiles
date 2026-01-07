@@ -4,6 +4,24 @@ set -euo pipefail
 source "$(dirname "$0")/deploy_common.sh"
 
 # -----------------------------
+# Diff mode: only sync changed files
+# -----------------------------
+if [[ "${1:-}" == "--diff" ]]; then
+    cd "$DOTFILES_DIR"
+    git diff --name-only | while read -r file; do
+        case "$file" in
+            mac/*)     dst="$HOME/${file#mac/}" ;;
+            .claude/*) dst="$HOME/$file" ;;
+            .cursor/*) dst="$HOME/$file" ;;
+            *)         continue ;;
+        esac
+        echo "SYNC: $file -> $dst"
+        rsync -a "$DOTFILES_DIR/$file" "$dst"
+    done
+    exit 0
+fi
+
+# -----------------------------
 # Directories
 # -----------------------------
 mkdir -p \
