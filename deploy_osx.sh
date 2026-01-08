@@ -58,6 +58,7 @@ mln_if_exists "$DOTFILES_DIR/mac/.vimrc.local"    ~/.vimrc.local    || true
 mln_if_exists "$DOTFILES_DIR/mac/.tmux.conf"      ~/.tmux.conf      || true
 mln_if_exists "$DOTFILES_DIR/mac/.tpu_aliases"    ~/.tpu_aliases    || true
 mln_if_exists "$DOTFILES_DIR/.tmux.config"        ~/.tmux.config    || true
+mln_if_exists "$DOTFILES_DIR/mac/.secrets"        +~/.secrets       || true
 
 # -----------------------------
 # Claude + Cursor (entire trees)

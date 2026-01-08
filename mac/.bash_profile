@@ -27,4 +27,4 @@ fi
 # ----- Source additional configs -----
 [ -f ~/.bashrc ] && . ~/.bashrc
 [ -f ~/.bash_aliases ] && . ~/.bash_aliases
-[ -f ~/.secrets ] && . ~/.secrets
+[ -f ~/.secrets/tokens.sh ] && . ~/.secrets/tokens.sh

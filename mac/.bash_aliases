@@ -5,7 +5,7 @@
 ########################################
 # Basics
 ########################################
-realias() { source ~/.bash_aliases; }
+realias() { source ~/.bash_aliases; [ -f ~/.secrets/tokens.sh ] && source ~/.secrets/tokens.sh; }
 
 
 # ls family
@@ -90,6 +90,8 @@ alias gs='git status'
 alias ga='git add'
 alias gc='git commit'
 alias gp='git push'
+alias gd='git diff --color=always'
+alias gdc='git diff --cached --color=always'
 
 gcm()  { git commit -m "$*"; }
 gcmp() { git commit -m "$*" && git push; }
@@ -108,12 +110,13 @@ HOST_LION="lion.paninski.zi.columbia.edu"
 HOST_PANDA="panda.stats.columbia.edu"
 HOST_KOALA="koala.paninski.zi.columbia.edu"
 HOST_SHER="login.sherlock.stanford.edu"
+HOST_TOGE="" # placeholder for now
 
 # Usernames
 USER_AXON="ekb2154"
 USER_PAN="ekellbuch"
 USER_SHER="ekb"
-
+USER_TOGE="macs"
 SHER_TRANSFER_DIR="/home/groups/swl1/ekb/transfer"
 
 
@@ -127,6 +130,7 @@ remote_spec() {
     haba)  echo "${USER_AXON}@${HOST_HABA}" ;;
     moto)  echo "${USER_AXON}@${HOST_MOTO}" ;;
     sher)  echo "${USER_SHER}@${HOST_SHER}" ;;
+    toge)  echo "${USER_TOGE}@${HOST_TOGE}" ;;
     *)
       echo "Unknown remote: $1 (expected: lion|panda|koala|axon|haba|moto)" >&2
       return 1
@@ -151,7 +155,11 @@ remote_default_dir() {
 logremote() {
   # Usage: logremote lion
   local r; r="$(remote_spec "$1")" || return
-  ssh -p "$SSH_PORT" -CYX "$r"
+  if [[ "$1" == "toge" ]]; then
+    ssh -J "$r" "${USER_TOGE}@slurm-login"
+  else
+    ssh -p "$SSH_PORT" -CYX "$r"
+  fi
 }
 
 rsync_ssh() {
@@ -234,6 +242,11 @@ jupytunnel() {
 }
 
 ########################################
+# Slurm
+########################################
+alias gpualloc='salloc --gres=gpu:1 --cpus-per-task=8 --mem=64G --time=30-00:00:00'
+
+########################################
 # Misc
 ########################################
 
@@ -248,3 +261,6 @@ export WANDB_ARTIFACT_DIR="$DATADIR/wandb/artifacts"
 # Mac specific
 export ENGRI_DIR='/Volumes/paninski-locker'
 
+realias_tokens() { source ~/.secrets/tokens.sh; }
+# call realias_tokens to test
+realias_tokens

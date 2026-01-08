@@ -12,3 +12,14 @@
 
 - Before preparing any git commit, always use the deslop subagent to review and
   clean up AI-generated patterns.
+
+## Subagent Format
+
+When creating new subagents, follow this structure:
+
+1. Clear description with trigger conditions ("Use when...", "Use proactively when...")
+2. Body starts with HOW to get the relevant context (e.g., which commands to run, which files to read)
+3. Bulleted list of specific criteria/rules to apply
+4. End with: "Report at the end with a concise summary of what you changed/found."
+
+Example reference: .claude/agents/deslop.md
