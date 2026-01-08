@@ -12,7 +12,6 @@ if [[ "${1:-}" == "--diff" ]]; then
         case "$file" in
             mac/*)     dst="$HOME/${file#mac/}" ;;
             .claude/*) dst="$HOME/$file" ;;
-            .cursor/*) dst="$HOME/$file" ;;
             *)         continue ;;
         esac
         echo "SYNC: $file -> $dst"
@@ -27,8 +26,7 @@ fi
 mkdir -p \
   ~/.vim/{colors,snippets} \
   ~/scripts \
-  ~/.claude \
-  ~/.cursor
+  ~/.claude
 
 # -----------------------------
 # Helper: recursively symlink a tree (files only)
@@ -50,17 +48,11 @@ link_tree() {
 # -----------------------------
 # Dotfiles (single files)
 # -----------------------------
-mln_if_exists "$DOTFILES_DIR/mac/.bash_profile"   ~/.bash_profile   || true
 mln_if_exists "$DOTFILES_DIR/mac/.bash_aliases"   ~/.bash_aliases   || true
-mln_if_exists "$DOTFILES_DIR/mac/.bashrc"         ~/.bashrc         || true
 mln_if_exists "$DOTFILES_DIR/mac/.vimrc"          ~/.vimrc          || true
-mln_if_exists "$DOTFILES_DIR/mac/.vimrc.local"    ~/.vimrc.local    || true
 mln_if_exists "$DOTFILES_DIR/mac/.tmux.conf"      ~/.tmux.conf      || true
-mln_if_exists "$DOTFILES_DIR/mac/.tpu_aliases"    ~/.tpu_aliases    || true
-mln_if_exists "$DOTFILES_DIR/mac/.secrets"        +~/.secrets       || true
 
 # -----------------------------
-# Claude + Cursor (entire trees)
+# Claude (entire tree)
 # -----------------------------
 link_tree "$DOTFILES_DIR/.claude" "$HOME/.claude"
-link_tree "$DOTFILES_DIR/.cursor" "$HOME/.cursor"
