@@ -1,0 +1,56 @@
+name: Gemini CLI
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  gemini:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@gemini-cli')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@gemini-cli')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@gemini-cli')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@gemini-cli') || contains(github.event.issue.title, '@gemini-cli')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read # Required for Gemini CLI to read CI results on PRs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Run Gemini CLI
+        id: gemini
+        uses: google-github-actions/run-gemini-cli@v1
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+
+          # Optional: Customize the trigger phrase (default: @gemini-cli)
+          # trigger_phrase: "/gemini"
+
+          # Optional: Trigger when specific user is assigned to an issue
+          # assignee_trigger: "gemini-bot"
+
+          # Optional: Configure Gemini CLI's behavior with settings
+          # settings: |
+          #   {
+          #     "model": "gemini-2.5-pro",
+          #     "maxTurns": 10
+          #   }
+
+          # Optional: Advanced prompt customization
+          # prompt: |
+          #   You are a helpful coding assistant for this repository.
+          #   Follow the project's coding standards and conventions.
+          #   Provide clear explanations and suggestions.
