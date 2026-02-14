@@ -1,0 +1,137 @@
+name: Sherlock Job Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: 'Command to run on Sherlock (e.g. "sbatch speedrun_sher.sh" or any shell command)'
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  # Base directory where repos live on Sherlock. Repo name is appended automatically.
+  SHERLOCK_PROJECTS: /home/groups/swl1/ekb/Projects
+
+jobs:
+  parse:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/run '))
+    runs-on: ubuntu-latest
+    outputs:
+      command: ${{ steps.parse.outputs.command }}
+      comment_triggered: ${{ steps.parse.outputs.comment_triggered }}
+    steps:
+      - name: Parse inputs
+        id: parse
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "command=${{ github.event.inputs.command }}" >> "$GITHUB_OUTPUT"
+            echo "comment_triggered=false" >> "$GITHUB_OUTPUT"
+          else
+            COMMENT=$(cat <<'ENDOFCOMMENT'
+          ${{ github.event.comment.body }}
+          ENDOFCOMMENT
+            )
+            CMD=$(echo "$COMMENT" | head -1 | sed 's|^/run ||')
+            echo "command=$CMD" >> "$GITHUB_OUTPUT"
+            echo "comment_triggered=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: React to comment
+        if: github.event_name == 'issue_comment'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+            -f content=rocket
+
+  run:
+    needs: parse
+    runs-on: [self-hosted, sherlock]
+    steps:
+      - name: Execute command
+        id: exec
+        shell: bash
+        run: |
+          # Auto-detect working directory from repo name
+          REPO_NAME="${{ github.event.repository.name }}"
+          WORK_DIR="${SHERLOCK_PROJECTS}/${REPO_NAME}"
+          if [ -d "$WORK_DIR" ]; then
+            cd "$WORK_DIR"
+          fi
+
+          CMD="${{ needs.parse.outputs.command }}"
+          echo "Running: $CMD"
+
+          set +e
+          OUTPUT=$(eval "$CMD" 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          echo "$OUTPUT"
+
+          JOB_ID=$(echo "$OUTPUT" | grep -oP 'Submitted batch job \K\d+' || true)
+
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+          echo "job_id=$JOB_ID" >> "$GITHUB_OUTPUT"
+
+          # Save output to file for the comment step
+          echo "$OUTPUT" > /tmp/run_output.txt
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            exit $EXIT_CODE
+          fi
+
+      - name: Comment result
+        if: always() && needs.parse.outputs.comment_triggered == 'true'
+        shell: bash
+        run: |
+          CMD="${{ needs.parse.outputs.command }}"
+          EXIT_CODE="${{ steps.exec.outputs.exit_code }}"
+          JOB_ID="${{ steps.exec.outputs.job_id }}"
+          ISSUE_NUM="${{ github.event.issue.number }}"
+          REPO="${{ github.repository }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          OUTPUT=""
+          if [ -f /tmp/run_output.txt ]; then
+            OUTPUT=$(tail -30 /tmp/run_output.txt)
+          fi
+
+          if [ -n "$JOB_ID" ]; then
+            BODY=$(cat <<EOF
+          **Submitted to Sherlock**
+          | Field | Value |
+          |-------|-------|
+          | Command | \`$CMD\` |
+          | Job ID | \`$JOB_ID\` |
+          | Monitor | \`/run squeue -j $JOB_ID\` |
+
+          \`\`\`
+          $OUTPUT
+          \`\`\`
+          EOF
+            )
+          else
+            BODY=$(cat <<EOF
+          **Ran on Sherlock** (exit code: \`$EXIT_CODE\`)
+          \`\`\`
+          $ $CMD
+          $OUTPUT
+          \`\`\`
+          EOF
+            )
+          fi
+
+          # Use gh from module if needed
+          export PATH="/share/software/user/open/gh/2.76.2/bin:$PATH"
+          gh issue comment "$ISSUE_NUM" --repo "$REPO" --body "$BODY"
