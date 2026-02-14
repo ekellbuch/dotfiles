@@ -13,6 +13,14 @@ alias soda="source activate"
 alias sodi="source deactivate"
 
 ########################################
+# Sherlock paths
+########################################
+export DOTFILES_DIR="/home/groups/swl1/ekb/Projects/dotfiles"
+export SHERLOCK_PROJECTS="/home/groups/swl1/ekb/Projects"
+export SHERLOCK_RUNNER_DIR="/home/groups/swl1/ekb/actions-runner"
+export GROUP_BASE="/home/groups/swl1/ekb"
+
+########################################
 # Slurm
 ########################################
 alias q='squeue'
