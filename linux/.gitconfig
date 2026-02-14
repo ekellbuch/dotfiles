@@ -1,0 +1,10 @@
+[push]
+	default = matching
+[credential]
+	helper = store
+[status]
+	showUntrackedFiles = no
+[pull]
+	rebase = true
+[include]
+	path = ~/.gitconfig.local

@@ -10,9 +10,11 @@ if [[ "${1:-}" == "--diff" ]]; then
     cd "$DOTFILES_DIR"
     git diff --name-only | while read -r file; do
         case "$file" in
-            mac/*)     dst="$HOME/${file#mac/}" ;;
-            .claude/*) dst="$HOME/$file" ;;
-            *)         continue ;;
+            common/.bash_common) dst="$HOME/.bash_common" ;;
+            common/.tmux.common) dst="$HOME/.tmux.common" ;;
+            linux/*)             dst="$HOME/.${file#linux/.}" ;;
+            .claude/*)           dst="$HOME/$file" ;;
+            *)                   continue ;;
         esac
         echo "SYNC: $file -> $dst"
         rsync -a "$DOTFILES_DIR/$file" "$dst"
@@ -46,11 +48,18 @@ link_tree() {
 }
 
 # -----------------------------
-# Dotfiles (single files)
+# Common (shared across platforms)
 # -----------------------------
-mln_if_exists "$DOTFILES_DIR/mac/.bash_aliases"   ~/.bash_aliases   || true
-mln_if_exists "$DOTFILES_DIR/mac/.vimrc"          ~/.vimrc          || true
-mln_if_exists "$DOTFILES_DIR/mac/.tmux.conf"      ~/.tmux.conf      || true
+mln_if_exists "$DOTFILES_DIR/common/.bash_common" ~/.bash_common || true
+mln_if_exists "$DOTFILES_DIR/common/.tmux.common" ~/.tmux.common || true
+
+# -----------------------------
+# Linux dotfiles
+# -----------------------------
+mln_if_exists "$DOTFILES_DIR/linux/.bash_aliases" ~/.bash_aliases || true
+mln_if_exists "$DOTFILES_DIR/linux/.vimrc"        ~/.vimrc        || true
+mln_if_exists "$DOTFILES_DIR/linux/.tmux.conf"    ~/.tmux.conf    || true
+mln_if_exists "$DOTFILES_DIR/linux/.gitconfig"    ~/.gitconfig    || true
 
 # -----------------------------
 # Claude (entire tree)

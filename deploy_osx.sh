@@ -10,6 +10,8 @@ if [[ "${1:-}" == "--diff" ]]; then
     cd "$DOTFILES_DIR"
     git diff --name-only | while read -r file; do
         case "$file" in
+            common/.bash_common) dst="$HOME/.bash_common" ;;
+            common/.tmux.common) dst="$HOME/.tmux.common" ;;
             mac/*)     dst="$HOME/${file#mac/}" ;;
             .claude/*) dst="$HOME/$file" ;;
             .cursor/*) dst="$HOME/$file" ;;
@@ -46,6 +48,12 @@ link_tree() {
     mln_if_exists "$src" "$dst" || true
   done
 }
+
+# -----------------------------
+# Common (shared across platforms)
+# -----------------------------
+mln_if_exists "$DOTFILES_DIR/common/.bash_common" ~/.bash_common || true
+mln_if_exists "$DOTFILES_DIR/common/.tmux.common" ~/.tmux.common || true
 
 # -----------------------------
 # Dotfiles (single files)
