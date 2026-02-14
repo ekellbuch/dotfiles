@@ -15,10 +15,6 @@ permissions:
   issues: write
   pull-requests: write
 
-env:
-  # Base directory where repos live on Sherlock. Repo name is appended automatically.
-  SHERLOCK_PROJECTS: /home/groups/swl1/ekb/Projects
-
 jobs:
   parse:
     if: >-
@@ -132,6 +128,4 @@ jobs:
             )
           fi
 
-          # Use gh from module if needed
-          export PATH="/share/software/user/open/gh/2.76.2/bin:$PATH"
           gh issue comment "$ISSUE_NUM" --repo "$REPO" --body "$BODY"
